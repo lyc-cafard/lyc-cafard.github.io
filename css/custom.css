@@ -1,0 +1,231 @@
+/* ============================================================
+   Blog typography & layout overrides
+   Loaded via theme inject.head in themes/butterfly/_config.yml
+   Theme: Butterfly 5.x  |  All changes in source/ for upgrade safety
+   ============================================================
+
+   Sections:
+     1. Article line-height       — tighter reading rhythm
+     2. Heading hierarchy          — 6-level markers (h1:#  h2:border  h3:border  h4:›  h5:▸  h6:·)
+     3. Scroll anchor offset       — prevents TOC-jump / resize targets from hiding under nav
+     4. Dark mode                  — preserves heading marker colors in dark theme
+     5. Category hierarchy         — depth-based symbols (▸ ▹ · –) replacing generic blue circle
+   ============================================================ */
+
+/* ---- 1. Article line-height ---- */
+/* Butterfly default is 2 (set in var.styl $text-line-height).
+   Reduced here to 1.75 for denser, more comfortable reading. */
+.post-content {
+  line-height: 1.75;
+}
+
+/* ---- 2. Heading hierarchy ---- */
+/* Goal: make h1–h6 instantly distinguishable by size + weight + decoration + prefix.
+   h1 uses '#' prefix (markdown-native), h2/h3 use border accents,
+   h4/h5/h6 use progressively lighter glyph prefixes. */
+.post-content h1 {
+  font-size: 1.75em;
+  font-weight: 700;
+  margin: 32px 0 18px;
+}
+
+.post-content h1::before {
+  content: "#\00A0";
+  color: #49B1F5;
+}
+
+.post-content h2 {
+  font-size: 1.4em;
+  font-weight: 700;
+  margin: 28px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #49B1F5;
+}
+
+.post-content h3 {
+  font-size: 1.15em;
+  font-weight: 600;
+  margin: 24px 0 12px;
+  padding-left: 10px;
+  border-left: 4px solid #49B1F5;
+}
+
+.post-content h4 {
+  font-size: 1.05em;
+  font-weight: 600;
+  margin: 20px 0 10px;
+}
+
+.post-content h4::before {
+  content: "\203A\00A0";
+  color: #49B1F5;
+}
+
+.post-content h5 {
+  font-size: 1em;
+  font-weight: 600;
+  margin: 16px 0 8px;
+  color: #555;
+}
+
+.post-content h5::before {
+  content: "\25B8\00A0";
+  color: #49B1F5;
+}
+
+.post-content h6 {
+  font-size: 0.95em;
+  font-weight: 600;
+  margin: 16px 0 8px;
+  color: #888;
+}
+
+.post-content h6::before {
+  content: "\00B7\00A0";
+  color: #49B1F5;
+}
+
+/* ---- 3. Scroll anchor offset ---- */
+/* When the browser follows a TOC link or resize-anchor.js restores a heading,
+   this keeps the heading 80px below the top so the sticky nav / header
+   doesn't cover it. */
+.post-content h1,
+.post-content h2,
+.post-content h3,
+.post-content h4,
+.post-content h5,
+.post-content h6 {
+  scroll-margin-top: 80px;
+}
+
+/* ---- 4. Dark mode ---- */
+[data-theme="dark"] .post-content h1::before,
+[data-theme="dark"] .post-content h4::before,
+[data-theme="dark"] .post-content h5::before,
+[data-theme="dark"] .post-content h6::before {
+  color: #49B1F5;
+}
+
+[data-theme="dark"] .post-content h2 {
+  border-bottom-color: #49B1F5;
+}
+
+[data-theme="dark"] .post-content h3 {
+  border-left-color: #49B1F5;
+}
+
+[data-theme="dark"] .post-content h5 {
+  color: #aaa;
+}
+
+[data-theme="dark"] .post-content h6 {
+  color: #999;
+}
+
+/* ---- 5. Category hierarchy ---- */
+/* Replaces the theme's single blue circle (function.styl .list-beauty)
+   with depth-based symbols that make parent/child/grandchild relationships
+   obvious without needing tree lines.
+
+   Symbol progression:
+     Depth 1   ▸   filled triangle, bold blue   (root categories)
+     Depth 2   ▹   open triangle, blue           (direct children)
+     Depth 3   ·   middle dot, grey              (grandchildren)
+     Depth 4+  –   en dash, light grey           (deep nesting fallback)
+
+   Styling strategy: set a default (– grey) on all .category-list-link::before,
+   then override with higher-specificity selectors for depths 1–3.
+   Any nesting beyond 3 inherits the default automatically. */
+
+/* Clear the theme's generic li::before circle (function.styl .list-beauty).
+   Using !important because the theme rule has high specificity via @extend. */
+.category-lists .category-list-item::before,
+.category-lists .category-list-item::after {
+  content: none !important;
+  border: none !important;
+  background: none !important;
+  width: auto !important;
+  height: auto !important;
+  position: static !important;
+}
+
+/* ---- Indentation ---- */
+.category-lists .category-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+/* Every nested ul adds one level of indent; works for any depth */
+.category-lists .category-list-child {
+  padding-left: 26px;
+}
+
+/* ---- Base item ---- */
+.category-lists .category-list-item {
+  margin: 5px 0;
+  padding: 0;
+  line-height: 1.7;
+}
+
+/* ---- Default symbol (depth 4+ and any deeper level) ---- */
+.category-lists .category-list-item > .category-list-link::before {
+  content: "\2013\00A0";
+  color: #bbb;
+}
+
+/* ---- Depth 1: override default → ▸ bold blue ---- */
+.category-list > .category-list-item > .category-list-link {
+  font-weight: 600;
+  font-size: 1.06em;
+}
+
+.category-list > .category-list-item > .category-list-link::before {
+  content: "\25B8\00A0";
+  color: #49B1F5;
+  font-weight: bold;
+}
+
+/* ---- Depth 2: override default → ▹ blue ---- */
+.category-list-child > .category-list-item > .category-list-link::before {
+  content: "\25B9\00A0";
+  color: #49B1F5;
+}
+
+/* ---- Depth 3: override default → · lighter ---- */
+.category-list-child .category-list-child > .category-list-item > .category-list-link::before {
+  content: "\00B7\00A0";
+  color: #999;
+  font-size: 1.1em;
+}
+
+/* Depth 4, 5, 6, ... all fall back to the default (– grey) */
+
+/* ---- Keep link interaction ---- */
+.category-lists .category-list-link {
+  color: var(--font-color);
+  text-decoration: none;
+}
+
+.category-lists .category-list-link:hover {
+  color: #49B1F5;
+}
+
+.category-lists .category-list-count {
+  margin-left: 6px;
+  color: var(--card-meta);
+  font-size: 0.9em;
+}
+
+/* ---- Dark mode ---- */
+[data-theme="dark"] .category-list > .category-list-item > .category-list-link::before,
+[data-theme="dark"] .category-list-child > .category-list-item > .category-list-link::before {
+  color: #49B1F5;
+}
+
+[data-theme="dark"] .category-list-child .category-list-child > .category-list-item > .category-list-link::before {
+  color: #aaa;
+}
+
+[data-theme="dark"] .category-lists .category-list-item > .category-list-link::before {
+  color: #888;
+}
